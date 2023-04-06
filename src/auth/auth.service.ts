@@ -1,44 +1,55 @@
-import { Model } from 'mongoose';
 import {
   Injectable,
+  NotFoundException,
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Auth, AuthDocument } from './auth.schema';
-import { AuthDto } from './dto/auth.dto';
+import { JwtService } from '@nestjs/jwt';
+import { RegisterDto, LoginDto } from './dto/auth.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(Auth.name) private authModel: Model<AuthDocument>) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
-  async register(authDto: AuthDto): Promise<any> {
-    const { email, password } = authDto;
+  async register(dto: RegisterDto): Promise<any> {
+    console.log('AuthService register()', { dto });
 
-    const existingUser = await this.authModel.findOne({ email }).exec();
+    const { email } = dto;
+    const existingUser = await this.usersService.findOneByEmail(email);
+
     if (existingUser) {
-      throw new BadRequestException();
+      throw new BadRequestException(`User already exists: ${email}`);
     }
 
-    const newUser = new this.authModel({ email, password });
-    await newUser.save();
-
-    return { email, token: 'token' };
+    const newUser = await this.usersService.create(dto);
+    const token = await this.jwtService.sign({ userId: newUser.id });
+    return { email, token };
   }
 
-  async login(authDto: AuthDto): Promise<any> {
-    const { email, password } = authDto;
+  async login(dto: LoginDto): Promise<any> {
+    console.log('AuthService login()', { dto });
 
-    const user = await this.authModel.findOne({ email }).exec();
+    const { email } = dto;
+    const user = await this.usersService.findOneByEmail(email);
+
     if (!user) {
-      throw new UnauthorizedException();
+      throw new NotFoundException(`No user found for email: ${email}`);
     }
 
-    const isCorrectPassword = password === user.password;
-    if (!isCorrectPassword) {
-      throw new UnauthorizedException();
+    const isPasswordValid = await this.usersService.comparePasswords(
+      dto.password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid user password');
     }
 
-    return { email, token: 'token' };
+    const token = await this.jwtService.sign({ userId: user.id });
+    return { email, token };
   }
 }

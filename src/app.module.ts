@@ -1,21 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
+import { CamerasModule } from './cameras/cameras.module';
+import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { CameraModule } from './camera/camera.module';
-import { getMongoConfig } from './configs/mongo.config';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: getMongoConfig,
-    }),
-    AuthModule,
-    CameraModule,
-  ],
+  imports: [PrismaModule, CamerasModule, UsersModule, AuthModule],
   controllers: [],
   providers: [],
 })
