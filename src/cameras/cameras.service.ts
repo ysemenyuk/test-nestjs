@@ -7,12 +7,12 @@ import { Camera } from '@prisma/client';
 export class CamerasService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateCameraDto): Promise<Camera> {
+  async createOne(data: CreateCameraDto): Promise<Camera> {
     console.log('CamerasService create()', { data });
     return this.prisma.camera.create({ data });
   }
 
-  async findAll(): Promise<Camera[]> {
+  async findMany(): Promise<Camera[]> {
     return this.prisma.camera.findMany();
   }
 }

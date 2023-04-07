@@ -25,7 +25,7 @@ export class AuthService {
       throw new BadRequestException(`User already exists: ${email}`);
     }
 
-    const newUser = await this.usersService.create(dto);
+    const newUser = await this.usersService.createOne(dto);
     const token = await this.jwtService.sign({ userId: newUser.id });
     return { email, token };
   }

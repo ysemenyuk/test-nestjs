@@ -17,16 +17,12 @@ export class UsersService {
     return await bcrypt.hash(password, salt);
   }
 
-  async create(data: CreateUserDto) {
+  async createOne(data: CreateUserDto) {
     data.password = await this.hashPassword(data.password);
     return this.prisma.user.create({ data });
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
-  }
-
-  findOneById(id: number) {
+  findOne(id: number) {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
@@ -34,11 +30,11 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  update(id: number, data: UpdateUserDto) {
+  updateOne(id: number, data: UpdateUserDto) {
     return this.prisma.user.update({ where: { id }, data });
   }
 
-  remove(id: number) {
+  removeOne(id: number) {
     return this.prisma.user.delete({ where: { id } });
   }
 }
