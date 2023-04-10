@@ -19,22 +19,25 @@ export class UsersService {
 
   async createOne(data: CreateUserDto) {
     data.password = await this.hashPassword(data.password);
-    return this.prisma.user.create({ data });
+    return await this.prisma.user.create({ data });
   }
 
-  findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+  async findOne(id: number) {
+    return await this.prisma.user.findUnique({ where: { id } });
   }
 
-  findOneByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+  async findOneByEmail(email: string) {
+    return await this.prisma.user.findUnique({ where: { email } });
   }
 
-  updateOne(id: number, data: UpdateUserDto) {
-    return this.prisma.user.update({ where: { id }, data });
+  async updateOne(id: number, data: UpdateUserDto) {
+    if (data.password) {
+      data.password = await this.hashPassword(data.password);
+    }
+    return await this.prisma.user.update({ where: { id }, data });
   }
 
-  removeOne(id: number) {
-    return this.prisma.user.delete({ where: { id } });
+  async removeOne(id: number) {
+    return await this.prisma.user.delete({ where: { id } });
   }
 }

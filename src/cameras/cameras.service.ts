@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCameraDto } from './dto/camera.dto';
+import { CreateCameraDto, UpdateCameraDto } from './dto/camera.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { Camera } from '@prisma/client';
 
@@ -7,12 +7,23 @@ import { Camera } from '@prisma/client';
 export class CamerasService {
   constructor(private prisma: PrismaService) {}
 
-  async createOne(data: CreateCameraDto): Promise<Camera> {
-    console.log('CamerasService create()', { data });
+  createOne(data: CreateCameraDto): Promise<Camera> {
     return this.prisma.camera.create({ data });
   }
 
-  async findMany(): Promise<Camera[]> {
+  findMany(): Promise<Camera[]> {
     return this.prisma.camera.findMany();
+  }
+
+  findOne(id: number) {
+    return this.prisma.camera.findUnique({ where: { id } });
+  }
+
+  updateOne(id: number, data: UpdateCameraDto) {
+    return this.prisma.camera.update({ where: { id }, data });
+  }
+
+  removeOne(id: number) {
+    return this.prisma.camera.delete({ where: { id } });
   }
 }

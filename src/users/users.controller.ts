@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Body,
-  Patch,
+  Put,
   Delete,
   Param,
   ParseIntPipe,
@@ -19,7 +19,7 @@ export class UsersController {
     return await this.usersService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   async updateOne(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,

@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Put,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CamerasService } from './cameras.service';
-import { CreateCameraDto } from './dto/camera.dto';
+import { CreateCameraDto, UpdateCameraDto } from './dto/camera.dto';
 import { Camera } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 
@@ -18,5 +28,20 @@ export class CamerasController {
   @Get()
   async findMany(): Promise<Camera[]> {
     return await this.cameraService.findMany();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  async updateOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateCameraDto,
+  ): Promise<Camera> {
+    return await this.cameraService.updateOne(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async removeOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.cameraService.removeOne(id);
   }
 }

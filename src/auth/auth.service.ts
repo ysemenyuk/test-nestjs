@@ -22,7 +22,7 @@ export class AuthService {
     const existingUser = await this.usersService.findOneByEmail(email);
 
     if (existingUser) {
-      throw new BadRequestException(`User already exists: ${email}`);
+      throw new BadRequestException(`BadRequestException`);
     }
 
     const newUser = await this.usersService.createOne(dto);
@@ -37,7 +37,7 @@ export class AuthService {
     const user = await this.usersService.findOneByEmail(email);
 
     if (!user) {
-      throw new NotFoundException(`No user found for email: ${email}`);
+      throw new NotFoundException(`NotFoundException`);
     }
 
     const isPasswordValid = await this.usersService.comparePasswords(
@@ -46,10 +46,10 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid user password');
+      throw new UnauthorizedException('UnauthorizedException');
     }
 
-    const token = await this.jwtService.sign({ userId: user.id });
+    const token = await this.jwtService.sign({ email });
     return { email, token };
   }
 }
