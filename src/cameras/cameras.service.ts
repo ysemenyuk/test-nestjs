@@ -11,8 +11,8 @@ export class CamerasService {
     return this.prisma.camera.create({ data });
   }
 
-  findMany(): Promise<Camera[]> {
-    return this.prisma.camera.findMany();
+  findMany(userId): Promise<Camera[]> {
+    return this.prisma.camera.findMany({ where: { userId } });
   }
 
   findOne(id: number) {

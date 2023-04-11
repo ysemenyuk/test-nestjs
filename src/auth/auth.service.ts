@@ -16,8 +16,6 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto): Promise<any> {
-    console.log('AuthService register()', { dto });
-
     const { email } = dto;
     const existingUser = await this.usersService.findOneByEmail(email);
 
@@ -25,14 +23,12 @@ export class AuthService {
       throw new BadRequestException(`BadRequestException`);
     }
 
-    const newUser = await this.usersService.createOne(dto);
-    const token = await this.jwtService.sign({ userId: newUser.id });
+    await this.usersService.createOne(dto);
+    const token = await this.jwtService.sign({ email });
     return { email, token };
   }
 
   async login(dto: LoginDto): Promise<any> {
-    console.log('AuthService login()', { dto });
-
     const { email } = dto;
     const user = await this.usersService.findOneByEmail(email);
 

@@ -13,6 +13,7 @@ import { CamerasService } from './cameras.service';
 import { CreateCameraDto, UpdateCameraDto } from './dto/camera.dto';
 import { Camera } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { User } from '../decorators/user.decorator';
 
 @Controller('cameras')
 export class CamerasController {
@@ -26,8 +27,8 @@ export class CamerasController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findMany(): Promise<Camera[]> {
-    return await this.cameraService.findMany();
+  async findMany(@User('id') userId): Promise<Camera[]> {
+    return await this.cameraService.findMany(userId);
   }
 
   @UseGuards(JwtAuthGuard)
